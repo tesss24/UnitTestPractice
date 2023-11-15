@@ -52,27 +52,73 @@ TEST(PasswordTest, no_pass)
 TEST(PasswordTest, mixed_pass)
 {
 	Password test;
-	int pass = test.count_leading_characters("Aabbcc");
+	int pass = test.has_mixed_case("Aabbcc");
 	ASSERT_EQ(true,pass);
 }
 
 TEST(PasswordTest, all_lower)
 {
 	Password test;
-	int pass = test.count_leading_characters("aaaaa");
-	ASSERT_EQ(false,pass);
+	int pass = test.has_mixed_case("ksifhe");
+	ASSERT_FALSE(pass);
 }
 
 TEST(PasswordTest, all_upper)
 {
 	Password test;
-	int pass = test.count_leading_characters("AAAA");
-	ASSERT_EQ(false,pass);
+	int pass = test.has_mixed_case("BIJUFY");
+	ASSERT_FALSE(pass);
 }
 
 TEST(PasswordTest, special_mix)
 {
 	Password test;
-	int pass = test.count_leading_characters("#1Aa");
+	int pass = test.has_mixed_case("#1Aa");
 	ASSERT_EQ(true,pass);
+}
+
+TEST(PasswordTest, set_short)
+{
+	Password test;
+	test.set("1");
+	int auth = test.authenticate("1");
+	ASSERT_FALSE(auth);
+}
+
+TEST(PasswordTest, set_leading_chars)
+{
+	Password test;
+	test.set("aaaaa1234");
+	int auth = test.authenticate("aaaaa1234");
+	ASSERT_FALSE(auth);
+}
+
+TEST(PasswordTest, set_mixed_case)
+{
+	Password test;
+	test.set("aaabc1234");
+	int auth = test.authenticate("aaabc1234");
+	ASSERT_FALSE(auth);
+}
+
+TEST(PasswordTest, set_old_password) 
+{
+	Password test;
+	test.set("Aabccccc");
+	int auth1 = test.authenticate("Aabccccc");
+	ASSERT_TRUE(auth1);
+	test.set("Bbcddddd");
+	int auth2 = test.authenticate("Bbcddddd");
+	ASSERT_TRUE(auth2);
+	test.set("Aabccccc");
+	int auth = test.authenticate("Aabccccc");
+	ASSERT_FALSE(auth);
+}
+
+TEST(PasswordTest, set_password) 
+{
+	Password test;
+	test.set("Aabccccc");
+	int auth = test.authenticate("Aabccccc");
+	ASSERT_TRUE(auth);
 }
